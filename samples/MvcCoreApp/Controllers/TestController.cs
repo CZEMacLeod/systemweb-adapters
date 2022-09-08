@@ -1,6 +1,8 @@
+using System.Web;
 using ClassLibrary;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SystemWebAdapters;
+using Microsoft.AspNetCore.SystemWebAdapters.MapPath;
 
 namespace MvcCoreApp.Controllers
 {
@@ -24,6 +26,15 @@ namespace MvcCoreApp.Controllers
             HttpContext.Response.Headers["Cache-Control"] = "public";
 
             CookieTests.ResponseCookies(HttpContext, shareable);
+        }
+
+        [Route("/api/test/server/mappath")]
+        [HttpGet]
+        public IActionResult GetMapPath([FromServices] IMapPath mapPath)
+        {
+            var mpi = new MapPathInfo();
+            var stream = mpi.WriteMapPathInfo(mapPath);
+            return File(stream, "application/json");
         }
     }
 }

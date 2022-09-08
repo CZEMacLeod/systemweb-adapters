@@ -36,6 +36,11 @@ builder.Services.AddSystemWebAdapters()
         .AddSession())
     .AddJsonSessionSerializer(options => ClassLibrary.RemoteServiceUtils.RegisterSessionKeys(options.KnownKeys));
 
+builder.Services.AddMvcCore(options =>
+{
+    options.ReturnHttpNotAcceptable = false;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
