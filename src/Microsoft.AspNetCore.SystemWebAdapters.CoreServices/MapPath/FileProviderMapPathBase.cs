@@ -14,13 +14,18 @@ public abstract class FileProviderMapPathBase : MapPathBase, IMapPath
 
     public string MapPath(string? virtualPath)
     {
-        var relPath = RelPath(virtualPath)?.Replace('/', System.IO.Path.DirectorySeparatorChar); 
+        var relPath = RelPath(virtualPath)?.Replace('/', System.IO.Path.DirectorySeparatorChar);
         var fileProvider = _fileProvider;
+        return MapPath(relPath, fileProvider);
+    }
+
+    private string MapPath(string? relPath, IFileProvider fileProvider)
+    {
         if (_fileProvider is CompositeFileProvider composite)
         {
-            foreach(var fp in composite.FileProviders)
+            foreach (var fp in composite.FileProviders)
             {
-                var path = fp.GetFileInfo(relPath).PhysicalPath;
+                var path = MapPath(relPath, fp);
                 if (!string.IsNullOrEmpty(path)) return path;
             }
         }
