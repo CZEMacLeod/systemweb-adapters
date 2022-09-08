@@ -8,6 +8,8 @@ using System.Web.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SystemWebAdapters;
+using Microsoft.AspNetCore.SystemWebAdapters.MapPath;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +21,7 @@ public static class SystemWebAdaptersExtensions
         services.AddSingleton<IHttpRuntime>(_ => HttpRuntimeFactory.Create());
         services.AddSingleton<Cache>();
         services.AddSingleton<BrowserCapabilitiesFactory>();
+        services.TryAddScoped<IMapPath, DefaultMapPath>();
         services.AddTransient<IStartupFilter, HttpContextStartupFilter>();
 
         return new SystemWebAdapterBuilder(services)

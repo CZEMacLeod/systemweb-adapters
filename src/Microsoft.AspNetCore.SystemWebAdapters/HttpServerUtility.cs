@@ -2,13 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SystemWebAdapters.MapPath;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace System.Web;
 
 [Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = Constants.ApiFromAspNet)]
-public class HttpServerUtility
+public partial class HttpServerUtility
 {
     private readonly HttpContextCore _context;
 
@@ -18,20 +19,6 @@ public class HttpServerUtility
     }
 
     public string MachineName => Environment.MachineName;
-
-    public string MapPath(string? path)
-    {
-        var appPath = (string.IsNullOrEmpty(path) ? VirtualPathUtility.GetDirectory(_context.Request.Path) :
-            VirtualPathUtility.Combine(
-                VirtualPathUtility.GetDirectory(_context.Request.Path) ?? "/"
-                , path));
-        var rootPath = HttpRuntime.AppDomainAppPath;
-        if (string.IsNullOrEmpty(appPath)) return rootPath;
-        return System.IO.Path.Combine(rootPath,
-            appPath[1..]
-            .Replace('/', System.IO.Path.DirectorySeparatorChar))
-            .TrimEnd(System.IO.Path.DirectorySeparatorChar);
-    }
 
     [Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:Use properties where appropriate", Justification = Constants.ApiFromAspNet)]
     public Exception? GetLastError() => null;

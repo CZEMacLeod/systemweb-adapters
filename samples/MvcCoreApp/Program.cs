@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.SystemWebAdapters;
+using Microsoft.AspNetCore.SystemWebAdapters.MapPath;
 
 var builder = WebApplication.CreateBuilder();
 builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
@@ -13,6 +14,14 @@ builder.Services.AddDataProtection()
 
 builder.Services.AddAuthentication()
     .AddCookie("SharedCookie", options => options.Cookie.Name = ".AspNet.ApplicationCookie");
+
+//builder.Services.AddScoped<IMapPath, ContentRootFileProviderMapPath>();
+//builder.Services.AddScoped<IMapPath, WebRootFileProviderMapPath>();
+//builder.Services.AddScoped<IMapPath, WebRootMapPath>();
+//builder.Services.AddScoped<IMapPath, ContentRootMapPath>();
+
+builder.Services.AddSingleton<IMapPathRoot, MyCustomMapPathRoot>();
+builder.Services.AddScoped<IMapPath, CustomRootMapPath>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
