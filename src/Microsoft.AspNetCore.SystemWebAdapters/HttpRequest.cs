@@ -184,6 +184,26 @@ namespace System.Web
 
         public string ApplicationPath => _request.HttpContext.RequestServices.GetRequiredService<IHttpRuntime>().AppDomainAppVirtualPath;
 
+        public string PhysicalApplicationPath => _request.HttpContext.RequestServices.GetRequiredService<IHttpRuntime>().AppDomainAppPath;
+
+        public string PhysicalPath
+        {
+            get
+            {
+                var relPath = VirtualPathUtility.ToAbsolute(AppRelativeCurrentExecutionFilePath);
+                var rootPath = HttpRuntime.AppDomainAppPath;
+                if (string.IsNullOrEmpty(relPath)) return rootPath;
+                return System.IO.Path.Combine(rootPath,
+                    relPath[1..]
+                    .Replace('/', System.IO.Path.DirectorySeparatorChar))
+                    .TrimEnd(System.IO.Path.DirectorySeparatorChar);
+            }
+        }
+
+        public string PathInfo => string.Empty;
+
+        public string? FilePath => Path;
+
         public Uri? UrlReferrer => TypedHeaders.Referer;
 
         public int TotalBytes => (int)InputStream.Length;
