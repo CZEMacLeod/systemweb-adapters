@@ -13,6 +13,7 @@ namespace MvcApp
             routes.IgnoreRoute("{resource}.sample/{*pathInfo}");
             routes.IgnoreRoute("{resource}.sampleasync");
             routes.IgnoreRoute("abc.test");
+            routes.IgnoreRoute("def.test");
             routes.IgnoreRoute("xyz.test");
 
             routes.MapRoute(

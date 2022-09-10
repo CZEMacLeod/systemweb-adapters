@@ -46,12 +46,6 @@ app.UseAuthorization();
 
 app.UseSystemWebAdapters();
 
-app.UseHttpHandler<ClassLibrary.InfoHttpHandler>("*.info");
-app.UseHttpHandler<HandlerLibrary.HelloWorldHandler>("*.sample");
-app.UseHttpHandler<HandlerLibrary.HelloWorldAsyncHandler>("*.sampleasync");
-app.UseHttpHandlerFactory<HandlerLibrary.MyHandlerFactory>("abc.test");
-app.UseHttpHandlerFactory<HandlerLibrary.MyHandlerFactory>("xyz.test");
-
 app.MapGet("/current-principals-with-metadata", (HttpContext ctx) =>
 {
     var user1 = Thread.CurrentPrincipal;
@@ -74,6 +68,14 @@ app.UseEndpoints(endpoints =>
     app.MapDefaultControllerRoute();
     // This method can be used to enable session (or read-only session) on all controllers
     //.RequireSystemWebAdapterSession();
+
+    var epApp = endpoints.CreateApplicationBuilder();
+    epApp.UseHttpHandler<ClassLibrary.InfoHttpHandler>("*.info");
+    epApp.UseHttpHandler<HandlerLibrary.HelloWorldHandler>("*.sample");
+    epApp.UseHttpHandler<HandlerLibrary.HelloWorldAsyncHandler>("*.sampleasync");
+    epApp.UseHttpHandlerFactory<HandlerLibrary.MyHandlerFactory>("abc.test");
+    epApp.UseHttpHandlerFactory<HandlerLibrary.MyHandlerFactory>("def.test");
+    epApp.UseHttpHandlerFactory<HandlerLibrary.MyHandlerFactory>("xyz.test");
 
     app.MapReverseProxy();
 });

@@ -19,15 +19,17 @@ public class MyHandlerFactory : IHttpHandlerFactory
     {
         string fname = url.Substring(url.LastIndexOf('/') + 1);
         string cname = fname.Substring(0, fname.IndexOf('.'));
-        string className = "HandlerFactoryTest.Handlers." + cname.ToUpperInvariant();
+        string className = this.GetType().Namespace + ".Handlers." + cname.ToUpperInvariant();
 
         object h = null;
 
         // Try to create the handler object.
         try
         {
+            var type = this.GetType().Assembly.GetType(className);
+            if (type is null) return null;
             // Create the handler by calling class abc or class xyz.
-            h = Activator.CreateInstance(Type.GetType(className));
+            h = Activator.CreateInstance(type);
         }
         catch (Exception e)
         {

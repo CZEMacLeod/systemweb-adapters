@@ -43,6 +43,8 @@ public class HttpContext : IServiceProvider
 
     public Cache Cache => _context.RequestServices.GetRequiredService<Cache>();
 
+    public IHttpHandler? CurrentHandler => (IHttpHandler?)_context.Items["CurrentHandler"];
+
     /// <summary>
     /// Gets whether the current request is running in the development environment.
     /// </summary>
