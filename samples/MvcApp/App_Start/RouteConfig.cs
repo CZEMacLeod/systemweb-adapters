@@ -9,6 +9,12 @@ namespace MvcApp
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            routes.IgnoreRoute("{resource}.info/{*pathInfo}");
+            routes.IgnoreRoute("{resource}.sample/{*pathInfo}");
+            routes.IgnoreRoute("{resource}.sampleasync");
+            routes.IgnoreRoute("abc.test");
+            routes.IgnoreRoute("xyz.test");
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

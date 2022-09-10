@@ -22,6 +22,8 @@ public class RequestInfo
             writer.Write("RequestVirtualDirectory", context.Request.ApplicationPath);
             writer.Write("RawUrl", context.Request.RawUrl);
             writer.Write("Path", context.Request.Path);
+            writer.Write("FilePath", context.Request.FilePath);
+            writer.Write("PathInfo", context.Request.PathInfo);
             writer.Write("Length", context.Request.InputStream.Length);
             writer.Write("Charset", context.Response.Charset);
             writer.Write("ContentType", context.Response.ContentType);

@@ -180,9 +180,29 @@ namespace System.Web
             }
         }
 
-        public string AppRelativeCurrentExecutionFilePath => $"~{_request.Path.Value}";
+        public string AppRelativeCurrentExecutionFilePath => $"~{FilePath}";
 
         public string ApplicationPath => _request.HttpContext.RequestServices.GetRequiredService<IHttpRuntime>().AppDomainAppVirtualPath;
+
+        public string PhysicalApplicationPath => _request.HttpContext.RequestServices.GetRequiredService<IHttpRuntime>().AppDomainAppPath;
+
+        public string PhysicalPath
+        {
+            get
+            {
+                var relPath = VirtualPathUtility.ToAbsolute(AppRelativeCurrentExecutionFilePath);
+                var rootPath = HttpRuntime.AppDomainAppPath;
+                if (string.IsNullOrEmpty(relPath)) return rootPath;
+                return System.IO.Path.Combine(rootPath,
+                    relPath[1..]
+                    .Replace('/', System.IO.Path.DirectorySeparatorChar))
+                    .TrimEnd(System.IO.Path.DirectorySeparatorChar);
+            }
+        }
+
+        public string PathInfo => (string?)_request.HttpContext.Items["PathInfo"] ?? string.Empty;
+
+        public string? FilePath => (string?)_request.HttpContext.Items["FilePath"] ?? Path;
 
         public Uri? UrlReferrer => TypedHeaders.Referer;
 

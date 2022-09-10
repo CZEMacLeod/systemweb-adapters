@@ -46,6 +46,12 @@ app.UseAuthorization();
 
 app.UseSystemWebAdapters();
 
+app.UseHttpHandler<ClassLibrary.InfoHttpHandler>("*.info");
+app.UseHttpHandler<HandlerLibrary.HelloWorldHandler>("*.sample");
+app.UseHttpHandler<HandlerLibrary.HelloWorldAsyncHandler>("*.sampleasync");
+app.UseHttpHandlerFactory<HandlerLibrary.MyHandlerFactory>("abc.test");
+app.UseHttpHandlerFactory<HandlerLibrary.MyHandlerFactory>("xyz.test");
+
 app.MapGet("/current-principals-with-metadata", (HttpContext ctx) =>
 {
     var user1 = Thread.CurrentPrincipal;

@@ -151,6 +151,7 @@ namespace System.Web
         public int ContentLength { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public string ContentType { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} set { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public System.Web.HttpCookieCollection Cookies { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
+        public string FilePath { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public System.Web.HttpFileCollection Files { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public System.Collections.Specialized.NameValueCollection Form { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public System.Collections.Specialized.NameValueCollection Headers { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
@@ -163,6 +164,9 @@ namespace System.Web
         public System.Security.Principal.IIdentity LogonUserIdentity { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public System.Collections.Specialized.NameValueCollection Params { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public string Path { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
+        public string PathInfo { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
+        public string PhysicalApplicationPath { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
+        public string PhysicalPath { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public System.Collections.Specialized.NameValueCollection QueryString { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public string RawUrl { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public System.Web.ReadEntityBodyMode ReadEntityBodyMode { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
@@ -427,6 +431,21 @@ namespace System.Web
         public HttpUnhandledException() { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
         public HttpUnhandledException(string message) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
         public HttpUnhandledException(string message, System.Exception innerException) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
+    }
+    public partial interface IHttpAsyncHandler : System.Web.IHttpHandler
+    {
+        System.IAsyncResult BeginProcessRequest(System.Web.HttpContext context, System.AsyncCallback cb, object extraData);
+        void EndProcessRequest(System.IAsyncResult result);
+    }
+    public partial interface IHttpHandler
+    {
+        bool IsReusable { get; }
+        void ProcessRequest(System.Web.HttpContext context);
+    }
+    public partial interface IHttpHandlerFactory
+    {
+        System.Web.IHttpHandler GetHandler(System.Web.HttpContext context, string requestType, string url, string pathTranslated);
+        void ReleaseHandler(System.Web.IHttpHandler handler);
     }
     public partial interface ISubscriptionToken
     {

@@ -363,6 +363,10 @@
       <Project>{11dd4d64-7a95-4635-a273-775715e18852}</Project>
       <Name>ClassLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HandlerLibrary\HandlerLibrary.csproj">
+      <Project>{a0b2e6be-da83-4f47-93a0-bd21ea5a0221}</Project>
+      <Name>HandlerLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
