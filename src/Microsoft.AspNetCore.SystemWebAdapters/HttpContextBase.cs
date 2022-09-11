@@ -35,6 +35,8 @@ namespace System.Web
 
         public virtual HttpSessionStateBase? Session => throw new NotImplementedException();
 
+        public virtual IHttpHandler? CurrentHandler => throw new NotImplementedException();
+
         public virtual object? GetService(Type serviceType) => throw new NotImplementedException();
 
         [return: NotNullIfNotNull("context")]

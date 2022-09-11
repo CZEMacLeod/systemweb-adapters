@@ -70,6 +70,9 @@ namespace System.Web
             }
         }
 
+        public override IHttpHandler? CurrentHandler => _context.Items.Contains("CurrentHandler") ?
+            (IHttpHandler?)_context.Items["CurrentHandler"] : null;
+
         public override IPrincipal User
         {
             get => _context.User;
