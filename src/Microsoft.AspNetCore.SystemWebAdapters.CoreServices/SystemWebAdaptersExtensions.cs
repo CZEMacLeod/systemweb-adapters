@@ -7,6 +7,7 @@ using System.Web.Caching;
 using System.Web.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SystemWebAdapters;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ public static class SystemWebAdaptersExtensions
     public static ISystemWebAdapterBuilder AddSystemWebAdapters(this IServiceCollection services)
     {
         services.AddHttpContextAccessor();
-        services.AddSingleton<IHttpRuntime>(_ => HttpRuntimeFactory.Create());
+        services.AddSingleton<IHttpRuntime>(sp => HttpRuntimeFactory.Create(sp.GetService<IHttpContextAccessor>()));
         services.AddSingleton<Cache>();
         services.AddSingleton<BrowserCapabilitiesFactory>();
         services.AddTransient<IStartupFilter, HttpContextStartupFilter>();

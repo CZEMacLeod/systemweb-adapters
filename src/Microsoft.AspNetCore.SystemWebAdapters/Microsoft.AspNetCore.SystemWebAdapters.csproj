@@ -43,7 +43,8 @@
     <Compile Include="Properties/PropertyInfo.cs" />
     <Compile Include="Adapters/**/*.cs" />
     <Compile Include="Generated/TypeForwards.*.cs" />
-
+    <Compile Include="HttpApplicationPool.cs" />
+    
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

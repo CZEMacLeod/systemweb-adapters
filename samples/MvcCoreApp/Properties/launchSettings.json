@@ -3,14 +3,16 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:50409",
-      "sslPort": 0
+      "applicationUrl": "http://localhost:44369",
+      "sslPort": 44368
     }
   },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
+      "use64Bit": true,
       "launchBrowser": true,
+      "launchUrl": "api/test/httpruntime",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ReverseProxy__Clusters__fallbackCluster__Destinations__fallbackApp__Address": "https://localhost:44339"
@@ -19,6 +21,7 @@
     "MvcCoreApp": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "api/test/httpruntime",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ReverseProxy__Clusters__fallbackCluster__Destinations__fallbackApp__Address": "https://localhost:44339"

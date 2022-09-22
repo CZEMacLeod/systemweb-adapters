@@ -20,6 +20,13 @@ internal static class NativeMethods
     [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
     private static extern int http_get_application_properties(ref IISConfigurationData iiConfigData);
 
+    [DllImport(AspNetCoreModuleDll, CharSet = CharSet.Unicode)]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.UserDirectories)]
+    private static extern int http_get_server_variable(
+        IntPtr pInProcessHandler,
+        [MarshalAs(UnmanagedType.LPWStr)] string variableName,
+        [MarshalAs(UnmanagedType.BStr)] out string value);
+
     internal static bool IsAspNetCoreModuleLoaded()
         => OperatingSystem.IsWindows() && GetModuleHandle(AspNetCoreModuleDll) != IntPtr.Zero;
 
@@ -36,6 +43,11 @@ internal static class NativeMethods
         {
             throw Marshal.GetExceptionForHR(hr)!;
         }
+    }
+
+    public static bool HttpTryGetServerVariable(IntPtr pInProcessHandler, string variableName, out string value)
+    {
+        return http_get_server_variable(pInProcessHandler, variableName, out value) == 0;
     }
 
     [StructLayout(LayoutKind.Sequential)]

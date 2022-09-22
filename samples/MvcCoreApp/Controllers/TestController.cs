@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ClassLibrary;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SystemWebAdapters;
@@ -25,5 +26,19 @@ namespace MvcCoreApp.Controllers
 
             CookieTests.ResponseCookies(HttpContext, shareable);
         }
+
+        [Route("/api/test/httpruntime")]
+        [HttpGet]
+        [Produces("application/json")]
+        public IActionResult TestHttpRuntime()
+        {
+            return Json(new ClassLibrary.HttpRuntimePropertiesModel(), new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.General)
+            {
+                PropertyNamingPolicy = null,
+                WriteIndented = true
+            });
+        }
+
+
     }
 }
