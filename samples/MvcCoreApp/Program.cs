@@ -26,6 +26,10 @@ builder.Services.AddSystemWebAdapters()
     .AddAuthenticationClient(true)
     .AddSessionClient();
 
+builder.Services.AddVirtualPathProvider<ClassLibrary.SamplePathProvider>();
+
+builder.Services.AddVirtualPathProvidersAsStaticFileProvider(options => options.ServeUnknownFileTypes = true);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

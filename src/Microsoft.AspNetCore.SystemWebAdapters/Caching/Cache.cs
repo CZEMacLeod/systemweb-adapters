@@ -45,8 +45,20 @@ public sealed class Cache : IEnumerable
             Priority = Convert(priority),
             RemovedCallback = Convert(onRemoveCallback),
         };
+        AddChangeMonitors(dependencies, policy);
 
         return _cache.AddOrGetExisting(key, value, policy);
+    }
+
+    private static void AddChangeMonitors(CacheDependency? dependencies, CacheItemPolicy policy)
+    {
+        if (dependencies?.ChangeMonitors is not null)
+        {
+            foreach (var changeMonitor in dependencies.ChangeMonitors)
+            {
+                policy.ChangeMonitors.Add(changeMonitor);
+            }
+        }
     }
 
     public object Get(string key) => _cache.Get(key);
@@ -60,6 +72,7 @@ public sealed class Cache : IEnumerable
             AbsoluteExpiration = Convert(absoluteExpiration),
             SlidingExpiration = slidingExpiration,
         };
+        AddChangeMonitors(dependencies, policy);
 
         _cache.Set(key, value, policy);
     }
@@ -73,6 +86,7 @@ public sealed class Cache : IEnumerable
             Priority = Convert(priority),
             RemovedCallback = Convert(onRemoveCallback),
         };
+        AddChangeMonitors(dependencies, policy);
 
         _cache.Set(key, value, policy);
     }
@@ -85,6 +99,7 @@ public sealed class Cache : IEnumerable
             SlidingExpiration = slidingExpiration,
             UpdateCallback = Convert(onUpdateCallback),
         };
+        AddChangeMonitors(dependencies, policy);
 
         _cache.Set(key, value, policy);
     }
@@ -158,6 +173,8 @@ public sealed class Cache : IEnumerable
     }
 
     public int Count => (int)_cache.GetCount();
+
+    internal ObjectCache ObjectCache => _cache;
 
     public IEnumerator GetEnumerator() => ((IEnumerable)_cache).GetEnumerator();
 }

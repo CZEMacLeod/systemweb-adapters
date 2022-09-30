@@ -4,7 +4,7 @@
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:50409",
-      "sslPort": 0
+      "sslPort": 50410
     }
   },
   "profiles": {
@@ -19,6 +19,7 @@
     "MvcCoreApp": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "vrDir/Level2DirA/Level2FileA.vrf",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ReverseProxy__Clusters__fallbackCluster__Destinations__fallbackApp__Address": "https://localhost:44339"
