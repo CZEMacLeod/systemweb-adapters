@@ -9,4 +9,6 @@ public interface IHostingEnvironmentAdapter
 {
     VirtualPathProvider? VirtualPathProvider { get; }
     void RegisterVirtualPathProvider(VirtualPathProvider virtualPathProvider);
+
+    System.Web.Caching.Cache Cache { get; }
 }

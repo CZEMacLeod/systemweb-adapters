@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Caching;
 using System.Web.Hosting;
-using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.SystemWebAdapters.Hosting;
 using Microsoft.Extensions.Primitives;
 
-namespace Microsoft.AspNetCore.SystemWebAdapters;
+namespace Microsoft.Extensions.FileProviders;
 
 public class VirtualPathProviderFileProvider : IFileProvider
 {

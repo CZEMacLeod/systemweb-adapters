@@ -60,6 +60,7 @@ public class CacheDependency : IDisposable
 
     private void ChangeMonitor_Changed(object state)
     {
+
         hasChanged = true;
         dependencyChangedAction?.Invoke(this, EventArgs.Empty);
     }
@@ -118,5 +119,30 @@ public class CacheDependency : IDisposable
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    internal ChangeMonitor GetChangeMonitor() => new CacheDependencyChangeMonitor(this);
+
+    internal class CacheDependencyChangeMonitor : ChangeMonitor
+    {
+        private readonly CacheDependency cacheDependency;
+        private string? uniqueId;
+
+        internal CacheDependencyChangeMonitor(CacheDependency cacheDependency)
+        {
+            this.cacheDependency = cacheDependency;
+            cacheDependency.SetCacheDependencyChanged((state, _) => OnChanged(state));
+            InitializationComplete();
+        }
+
+        public override string UniqueId => uniqueId ??= string.Join(":", cacheDependency.ChangeMonitors.Select(cm => cm.UniqueId));
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                cacheDependency?.Dispose();
+            }
+        }
     }
 }

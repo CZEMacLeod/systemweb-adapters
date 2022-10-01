@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SystemWebAdapters;
 using Microsoft.AspNetCore.SystemWebAdapters.Hosting;
+using Microsoft.Extensions.FileProviders;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -19,8 +20,9 @@ public static class SystemWebAdaptersExtensions
     {
         services.AddHttpContextAccessor();
         services.AddSingleton<IHttpRuntime>(_ => HttpRuntimeFactory.Create());
-        services.AddSingleton<IHostingEnvironmentAdapter>(sp => HostingEnvironmentFactory.Create(sp));
-        services.AddSingleton<IVirtualPathProvider>(sp => HostingEnvironmentFactory.CreateWebRootVirtualPathProvider(sp));
+        services.AddSingleton<ISystemWebCacheFactory, DefaultSystemWebCacheFactory>();
+        services.AddSingleton<IHostingEnvironmentAdapter, DefaultHostingEnvironment>();
+        services.AddSingleton<IVirtualPathProvider, WebRootVirtualPathProvider>();
         services.AddSingleton<Cache>();
         services.AddSingleton<BrowserCapabilitiesFactory>();
         services.AddTransient<IStartupFilter, HttpContextStartupFilter>();
@@ -71,27 +73,5 @@ public static class SystemWebAdaptersExtensions
                 builder.UseMiddleware<SetHttpContextTimestampMiddleware>();
                 next(builder);
             };
-    }
-
-    public static void AddVirtualPathProvider(this IServiceCollection services, VirtualPathProvider virtualPathProvider)
-    {
-        services.AddSingleton<IVirtualPathProvider>(_ => virtualPathProvider);
-    }
-
-    public static void AddVirtualPathProvider<T>(this IServiceCollection services)
-        where T : VirtualPathProvider
-    {
-        services.AddSingleton<IVirtualPathProvider, T>();
-    }
-
-    public static void AddVirtualPathProvidersAsStaticFileProvider(this IServiceCollection services, Action<StaticFileOptions>? configure = null)
-    {
-        services.AddOptions<StaticFileOptions>().PostConfigure<IHostingEnvironmentAdapter>((options, env) =>
-        {
-            var vpp = env?.VirtualPathProvider;
-            if (vpp is null) return;
-            options.FileProvider = new VirtualPathProviderFileProvider(vpp);
-            configure?.Invoke(options);
-        });
     }
 }

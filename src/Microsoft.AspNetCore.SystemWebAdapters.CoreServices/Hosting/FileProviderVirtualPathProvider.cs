@@ -10,7 +10,7 @@ using System.Web.Caching;
 using System.IO;
 using System.Linq;
 
-namespace Microsoft.AspNetCore.SystemWebAdapters;
+namespace Microsoft.AspNetCore.SystemWebAdapters.Hosting;
 
 // This actually works on Framework too, but requires a <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="6.0.0" />
 public class FileProviderVirtualPathProvider : System.Web.Hosting.VirtualPathProvider

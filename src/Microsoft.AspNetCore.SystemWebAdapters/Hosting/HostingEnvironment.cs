@@ -4,7 +4,6 @@
 // Partially based on code in https://github.com/microsoft/referencesource/blob/master/System.Web/Hosting/HostingEnvironment.cs
 // to ensure compatibility with code bypassing the BuildManager.IsPrecompiledApp check
 
-using System.Web.Caching;
 using Microsoft.AspNetCore.SystemWebAdapters.Hosting;
 
 namespace System.Web.Hosting;
@@ -12,7 +11,6 @@ namespace System.Web.Hosting;
 public sealed class HostingEnvironment
 {
     private static IHostingEnvironmentAdapter? _current;
-    private static Cache? cache;
 
     internal static IHostingEnvironmentAdapter Current
     {
@@ -36,10 +34,9 @@ public sealed class HostingEnvironment
 
         Current.RegisterVirtualPathProvider(virtualPathProvider);
     }
+    public static System.Web.Caching.Cache Cache => Current.Cache;
 
     public static string ApplicationPhysicalPath => HttpRuntime.AppDomainAppPath;
 
     public static string ApplicationVirtualPath => HttpRuntime.AppDomainAppVirtualPath;
-
-    public static System.Web.Caching.Cache Cache => cache ??= new Cache();
 }
