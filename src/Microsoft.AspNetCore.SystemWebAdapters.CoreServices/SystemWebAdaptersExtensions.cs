@@ -21,7 +21,7 @@ public static class SystemWebAdaptersExtensions
         services.AddHttpContextAccessor();
         services.AddSingleton<IHttpRuntime>(_ => HttpRuntimeFactory.Create());
         services.AddSingleton<ISystemWebCacheFactory, DefaultSystemWebCacheFactory>();
-        services.AddSingleton<IHostingEnvironmentAdapter, DefaultHostingEnvironment>();
+        services.AddSingleton<ISystemWebHostingEnvironment, DefaultHostingEnvironment>();
         services.AddSingleton<IVirtualPathProvider, WebRootVirtualPathProvider>();
         services.AddSingleton<Cache>();
         services.AddSingleton<BrowserCapabilitiesFactory>();
@@ -34,7 +34,7 @@ public static class SystemWebAdaptersExtensions
     public static void UseSystemWebAdapters(this IApplicationBuilder app)
     {
         HttpRuntime.Current = app.ApplicationServices.GetRequiredService<IHttpRuntime>();
-        System.Web.Hosting.HostingEnvironment.Current = app.ApplicationServices.GetRequiredService<IHostingEnvironmentAdapter>();
+        System.Web.Hosting.HostingEnvironment.Current = app.ApplicationServices.GetRequiredService<ISystemWebHostingEnvironment>();
 
         app.UseMiddleware<SetDefaultResponseHeadersMiddleware>();
         app.UseMiddleware<PreBufferRequestStreamMiddleware>();

@@ -10,9 +10,9 @@ namespace System.Web.Hosting;
 
 public sealed class HostingEnvironment
 {
-    private static IHostingEnvironmentAdapter? _current;
+    private static ISystemWebHostingEnvironment? _current;
 
-    internal static IHostingEnvironmentAdapter Current
+    internal static ISystemWebHostingEnvironment Current
     {
         get => _current ?? throw new InvalidOperationException("HostingEnvironment is not available in the current environment");
         set => _current = value;

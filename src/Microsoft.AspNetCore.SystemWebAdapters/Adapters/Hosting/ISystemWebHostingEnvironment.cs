@@ -5,7 +5,7 @@ using System.Web.Hosting;
 
 namespace Microsoft.AspNetCore.SystemWebAdapters.Hosting;
 
-public interface IHostingEnvironmentAdapter
+public interface ISystemWebHostingEnvironment
 {
     VirtualPathProvider? VirtualPathProvider { get; }
     void RegisterVirtualPathProvider(VirtualPathProvider virtualPathProvider);
