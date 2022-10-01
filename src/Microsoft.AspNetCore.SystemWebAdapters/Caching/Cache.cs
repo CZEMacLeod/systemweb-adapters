@@ -54,10 +54,7 @@ public sealed class Cache : IEnumerable
     {
         if (dependencies?.ChangeMonitors is not null)
         {
-            foreach (var changeMonitor in dependencies.ChangeMonitors)
-            {
-                policy.ChangeMonitors.Add(changeMonitor);
-            }
+            policy.ChangeMonitors.Add(dependencies.GetChangeMonitor());
         }
     }
 
