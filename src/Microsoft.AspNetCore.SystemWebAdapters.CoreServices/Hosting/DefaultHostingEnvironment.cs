@@ -8,7 +8,7 @@ using System.Web.Hosting;
 
 namespace Microsoft.AspNetCore.SystemWebAdapters.Hosting;
 
-public class DefaultHostingEnvironment : IHostingEnvironmentAdapter
+public class DefaultHostingEnvironment : ISystemWebHostingEnvironment
 {
     public DefaultHostingEnvironment(ISystemWebCacheFactory cacheFactory, IEnumerable<IVirtualPathProvider> virtualPathProviders)
     {

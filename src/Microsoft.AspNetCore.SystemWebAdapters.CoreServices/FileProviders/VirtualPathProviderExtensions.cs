@@ -20,7 +20,7 @@ public static class VirtualPathProviderExtensions
             throw new ArgumentNullException(nameof(adapter));
         }
 
-        adapter.Services.AddOptions<StaticFileOptions>().PostConfigure<IHostingEnvironmentAdapter>((options, env) =>
+        adapter.Services.AddOptions<StaticFileOptions>().PostConfigure<ISystemWebHostingEnvironment>((options, env) =>
         {
             var vpp = env?.VirtualPathProvider;
             if (vpp is null) return;
