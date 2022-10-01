@@ -12,7 +12,7 @@ M:System.Web.HttpRequestBase.op_Implicit(Microsoft.AspNetCore.Http.HttpRequest)~
 
 T:Microsoft.AspNetCore.SystemWebAdapters.SessionState.ISessionState
 T:Microsoft.AspNetCore.SystemWebAdapters.Hosting.IVirtualPathProvider
-T:Microsoft.AspNetCore.SystemWebAdapters.Hosting.IHostingEnvironmentAdapter
+T:Microsoft.AspNetCore.SystemWebAdapters.Hosting.ISystemWebHostingEnvironment
 T:Microsoft.AspNetCore.SystemWebAdapters.FileInfoBase`1
 
 # We manually type forward this only for .NET 4.7.2+
