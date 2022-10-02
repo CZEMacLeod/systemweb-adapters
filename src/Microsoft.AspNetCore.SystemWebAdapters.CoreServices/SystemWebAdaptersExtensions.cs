@@ -19,8 +19,7 @@ public static class SystemWebAdaptersExtensions
     public static ISystemWebAdapterBuilder AddSystemWebAdapters(this IServiceCollection services)
     {
         services.AddHttpContextAccessor();
-        services.AddSingleton<IHttpRuntime>(_ => HttpRuntimeFactory.Create());
-        services.AddSingleton<ISystemWebCacheFactory, DefaultSystemWebCacheFactory>();
+        services.AddSingleton<IHttpRuntime>(sp => HttpRuntimeFactory.Create(sp));
         services.AddSingleton<ISystemWebHostingEnvironment, DefaultHostingEnvironment>();
         services.AddSingleton<IVirtualPathProvider, WebRootVirtualPathProvider>();
         services.AddSingleton<Cache>();

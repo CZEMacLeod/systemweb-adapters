@@ -34,9 +34,12 @@ public sealed class HostingEnvironment
 
         Current.RegisterVirtualPathProvider(virtualPathProvider);
     }
-    public static System.Web.Caching.Cache Cache => Current.Cache;
+
+    #region "Alternative access via HttpRuntime"
+    public static System.Web.Caching.Cache Cache => HttpRuntime.Cache;
 
     public static string ApplicationPhysicalPath => HttpRuntime.AppDomainAppPath;
 
     public static string ApplicationVirtualPath => HttpRuntime.AppDomainAppVirtualPath;
+    #endregion
 }

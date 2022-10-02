@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Caching;
@@ -10,9 +11,8 @@ namespace Microsoft.AspNetCore.SystemWebAdapters.Hosting;
 
 public class DefaultHostingEnvironment : ISystemWebHostingEnvironment
 {
-    public DefaultHostingEnvironment(ISystemWebCacheFactory cacheFactory, IEnumerable<IVirtualPathProvider> virtualPathProviders)
+    public DefaultHostingEnvironment(IEnumerable<IVirtualPathProvider> virtualPathProviders)
     {
-        this.cacheFactory = cacheFactory;
         foreach (var vpp in virtualPathProviders.OfType<VirtualPathProvider>())
         {
             RegisterVirtualPathProvider(vpp);
@@ -20,15 +20,16 @@ public class DefaultHostingEnvironment : ISystemWebHostingEnvironment
     }
 
     private VirtualPathProvider? virtualPathProvider;
-    private Cache? cache;
-    private readonly ISystemWebCacheFactory cacheFactory;
 
     public VirtualPathProvider? VirtualPathProvider => virtualPathProvider;
 
-    public Cache Cache => cache ??= new Cache(cacheFactory.GetCache());
-
     public void RegisterVirtualPathProvider(VirtualPathProvider virtualPathProvider)
     {
+        if (virtualPathProvider is null)
+        {
+            throw new ArgumentNullException(nameof(virtualPathProvider));
+        }
+
         VirtualPathProvider? previous = this.virtualPathProvider;
         this.virtualPathProvider = virtualPathProvider;
 
