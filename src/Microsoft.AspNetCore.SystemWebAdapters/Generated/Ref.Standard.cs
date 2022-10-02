@@ -663,10 +663,8 @@ namespace System.Web.Caching
         public CacheDependency(string filename) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
         public CacheDependency(string filename, System.DateTime start) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
         public CacheDependency(string[] filenames) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
-        public CacheDependency(string[] filenames, System.DateTime start) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
-        public CacheDependency(string[] filenames, string[] cachekeys, System.DateTime start) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
-        public CacheDependency(string[] filenames, string[] cachekeys, System.Web.Caching.CacheDependency dependency, System.DateTime start) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
-        public bool HasChanged { [System.Runtime.CompilerServices.CompilerGeneratedAttribute]get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
+        public CacheDependency(string[] filenames, string[] fullPathDependenciesArray, System.DateTime utcStart) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
+        public bool HasChanged { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public System.DateTime UtcLastModified { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         protected virtual void DependencyDispose() { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
         public void Dispose() { }
