@@ -27,21 +27,17 @@ internal static class HttpRuntimeFactory
             Cache = serviceProvider.GetRequiredService<Cache>();
         }
 
-        public Cache Cache { get; }
+        return new DefaultHttpRuntime();
     }
 
-    internal class DefaultHttpRuntime : BaseHttpRuntime, IHttpRuntime
+    internal class DefaultHttpRuntime : IHttpRuntime
     {
-        public DefaultHttpRuntime(IServiceProvider sp) : base(sp)
-        {
-        }
-
         public string AppDomainAppVirtualPath => "/";
 
-        public string AppDomainAppPath => AppContext.BaseDirectory;
+        public override string AppDomainAppPath => AppContext.BaseDirectory;
     }
 
-    internal class IISHttpRuntime : BaseHttpRuntime, IHttpRuntime
+    internal class IISHttpRuntime : IHttpRuntime
     {
         private readonly NativeMethods.IISConfigurationData _config;
 
@@ -50,8 +46,8 @@ internal static class HttpRuntimeFactory
             _config = config;
         }
 
-        public string AppDomainAppVirtualPath => _config.pwzVirtualApplicationPath;
+        public override string AppDomainAppVirtualPath => _config.pwzVirtualApplicationPath;
 
-        public string AppDomainAppPath => _config.pwzFullApplicationPath;
+        public override string AppDomainAppPath => _config.pwzFullApplicationPath;
     }
 }

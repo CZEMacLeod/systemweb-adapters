@@ -70,6 +70,6 @@ namespace System.Web
             set => _context.User = value;
         }
 
-        public override Cache Cache => _context.Cache;
+        public override Cache Cache => HttpRuntime.Cache;
     }
 }
