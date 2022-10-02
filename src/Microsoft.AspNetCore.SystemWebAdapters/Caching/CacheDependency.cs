@@ -14,78 +14,125 @@ public class CacheDependency : IDisposable
     private bool disposedValue;
     private DateTime utcLastModified;
     private Action<object, EventArgs>? dependencyChangedAction;
-    private readonly string[]? filenames;
+    private string[]? filenames;
+    private readonly DateTime utcStart;
+    private bool initCompleted;
+    private string? uniqueId;
+    private bool uniqueIdInitialized;
 
     internal CacheDependency()
     {
         FinishInit();
     }
 
-    public CacheDependency(string filename) : this(new[] { filename }) { }
+    public CacheDependency(string filename) : this(filename, DateTime.MaxValue) { }
 
-    public CacheDependency(string[] filenames)
-    {
-        this.filenames = filenames;
-        changeMonitors.Add(new HostFileChangeMonitor(filenames.ToList()));
-        FinishInit();
-    }
+    public CacheDependency(string filename, DateTime start) : this(new[] { filename }, null, null, start) { }
+
+    public CacheDependency(string[] filenames) : this(filenames, null, null, DateTime.MaxValue) { }
+
+    public CacheDependency(string[] filenames, DateTime start) : this(filenames, null, null, start) { }
+
+    public CacheDependency(string[]? filenames, string[]? cachekeys, DateTime start) :
+        this(filenames, cachekeys, null, start)
+    { }
 
     public CacheDependency(
-        string[] filenames,
-        string[] fullPathDependenciesArray,
-        DateTime utcStart) : this(filenames)
+        string[]? filenames,
+        string[]? cachekeys,
+        CacheDependency? dependency,
+        DateTime start)
     {
+        utcLastModified = DateTime.MinValue;
+        if (start != DateTime.MaxValue && start.Kind != DateTimeKind.Utc)
+        {
+            start = start.ToUniversalTime();
+        }
+        utcStart = start;
+
         this.filenames = filenames;
         if (filenames is not null && filenames.Length != 0)
         {
             changeMonitors.Add(new HostFileChangeMonitor(filenames.ToList()));
         }
-        if (fullPathDependenciesArray is not null && fullPathDependenciesArray.Length != 0)
+
+        if (cachekeys is not null && cachekeys.Length != 0)
         {
-            changeMonitors.Add(
-                Hosting.HostingEnvironment.Cache.ObjectCache
-                    .CreateCacheEntryChangeMonitor(fullPathDependenciesArray));
+            changeMonitors.Add(Hosting.HostingEnvironment.Cache.ObjectCache
+                                .CreateCacheEntryChangeMonitor(cachekeys));
         }
 
-        utcLastModified = utcStart;
+        if (dependency is not null)
+        {
+            changeMonitors.Add(dependency.GetChangeMonitor());
+        }
+
+        FinishInit();
     }
 
     protected internal void FinishInit()
     {
-        foreach (var changeMonitor in changeMonitors)
+        hasChanged = changeMonitors.Any(cm => cm.HasChanged && (cm.GetLastModifiedUtc() > utcStart));
+        utcLastModified = changeMonitors.Max(cm => cm.GetLastModifiedUtc());
+        if (hasChanged)
         {
-            changeMonitor?.NotifyOnChanged(ChangeMonitor_Changed);
+            NotifyDependencyChanged(this, EventArgs.Empty);
         }
+        changeMonitors.ForEach(cm => cm.NotifyOnChanged(NotifyOnChanged));
+        initCompleted = true;
     }
 
-    private void ChangeMonitor_Changed(object state)
-    {
+    private void NotifyOnChanged(object state) => NotifyDependencyChanged(this, new ChangeNotificationEventArgs(state));
 
-        hasChanged = true;
-        dependencyChangedAction?.Invoke(this, EventArgs.Empty);
+    private class ChangeNotificationEventArgs : EventArgs
+    {
+        public ChangeNotificationEventArgs(object? state) => State = state;
+
+        public object? State { get; }
+    }
+
+#pragma warning disable CA2109 // Review visible event handlers
+    protected void NotifyDependencyChanged(object sender, EventArgs e)
+#pragma warning restore CA2109 // Review visible event handlers
+    {
+        if (initCompleted && DateTime.UtcNow > utcStart)
+        {
+            hasChanged = true;
+            utcLastModified = DateTime.UtcNow;
+            dependencyChangedAction?.Invoke(sender, e);
+        }
     }
 
     protected void SetUtcLastModified(DateTime utcLastModified) => this.utcLastModified = utcLastModified;
 
-    public void SetCacheDependencyChanged(Action<object, EventArgs> dependencyChangedAction)
-    {
+    public void SetCacheDependencyChanged(Action<object, EventArgs> dependencyChangedAction) =>
         this.dependencyChangedAction = dependencyChangedAction;
-    }
 
-    public virtual string[] GetFileDependencies() => filenames ?? Array.Empty<string>();
-    public bool HasChanged => changeMonitors.Any(cm => cm.HasChanged) || hasChanged;
+    public virtual string[] GetFileDependencies() => changeMonitors.OfType<FileChangeMonitor>().SelectMany(cm=>cm.FilePaths).ToArray();
+
+    public bool HasChanged => hasChanged;
+
     public DateTime UtcLastModified => changeMonitors
         .OfType<FileChangeMonitor>()
         .Select(fcm => fcm.LastModified.DateTime)
         .Concat(new[] { utcLastModified })
         .Max();
 
-    internal IEnumerable<ChangeMonitor> ChangeMonitors { get => changeMonitors; }
-
-    protected virtual void DependencyDispose()
+    public virtual string? GetUniqueID()
     {
-
+        if (!uniqueIdInitialized) {
+            uniqueId = changeMonitors.Any(cm => cm.UniqueId is null) ?
+                null :
+                string.Join(":", changeMonitors.Select(cm => cm.UniqueId));
+            uniqueIdInitialized = true;
+        }
+        return uniqueId;
     }
+
+
+    #region "IDisposable"
+    protected virtual void DependencyDispose() { }
+
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -100,19 +147,9 @@ public class CacheDependency : IDisposable
 
                 DependencyDispose();
             }
-
-            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-            // TODO: set large fields to null
             disposedValue = true;
         }
     }
-
-    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    // ~CacheDependency()
-    // {
-    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-    //     Dispose(disposing: false);
-    // }
 
     public void Dispose()
     {
@@ -120,13 +157,14 @@ public class CacheDependency : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+    #endregion
 
+    internal IEnumerable<ChangeMonitor> ChangeMonitors { get => changeMonitors; }
     internal ChangeMonitor GetChangeMonitor() => new CacheDependencyChangeMonitor(this);
 
     internal class CacheDependencyChangeMonitor : ChangeMonitor
     {
         private readonly CacheDependency cacheDependency;
-        private string? uniqueId;
 
         internal CacheDependencyChangeMonitor(CacheDependency cacheDependency)
         {
@@ -135,7 +173,9 @@ public class CacheDependency : IDisposable
             InitializationComplete();
         }
 
-        public override string UniqueId => uniqueId ??= string.Join(":", cacheDependency.ChangeMonitors.Select(cm => cm.UniqueId));
+        public override string? UniqueId => cacheDependency.GetUniqueID();
+
+        public DateTimeOffset LastModified => cacheDependency.UtcLastModified;
 
         protected override void Dispose(bool disposing)
         {
