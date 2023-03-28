@@ -4,7 +4,7 @@ using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
 
-namespace ClassLibrary;
+namespace VPPLibrary;
 
 //[AspNetHostingPermission(SecurityAction.Demand, Level = AspNetHostingPermissionLevel.Medium)]
 //[AspNetHostingPermission(SecurityAction.InheritanceDemand, Level = AspNetHostingPermissionLevel.High)]
