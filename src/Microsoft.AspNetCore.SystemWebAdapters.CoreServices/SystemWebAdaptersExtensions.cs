@@ -21,8 +21,6 @@ public static class SystemWebAdaptersExtensions
     {
         services.AddHttpContextAccessor();
         services.AddSingleton<IHttpRuntime>(sp => HttpRuntimeFactory.Create(sp));
-        services.AddSingleton<IVirtualPathProvider>(sp => HostingEnvironmentFactory.CreateWebRootVirtualPathProvider(sp));
-        services.AddSingleton<ISystemWebCacheFactory, DefaultSystemWebCacheFactory>();
         services.AddSingleton<ISystemWebHostingEnvironment, DefaultHostingEnvironment>();
         services.AddSingleton<IVirtualPathProvider, WebRootVirtualPathProvider>();
         services.AddSingleton<Cache>();
