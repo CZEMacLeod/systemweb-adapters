@@ -1,0 +1,25 @@
+<Project Sdk="MSBuild.SDK.SystemWeb/4.0.88">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <SignAssembly>false</SignAssembly>
+    <GeneratedBindingRedirectsAction>Overwrite</GeneratedBindingRedirectsAction>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Properties\launchSettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\samples\VirtualPathProvider\VPPLibrary\VPPLibrary.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <MSBuildWebTargetsPath>$(MSBuildExtensionsPath)\Microsoft\VisualStudio\Managed.Web\</MSBuildWebTargetsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildWebTargetsPath)Microsoft.Web.Designtime.targets" Condition="Exists('$(MSBuildWebTargetsPath)Microsoft.Web.Designtime.targets')" />
+
+  <ItemGroup>
+    <PropertyPageSchema Remove="$(XamlResourcesDirectory)ProjectDebugPropertyPage.xaml" />
+    <PropertyPageSchema Remove="$(XamlResourcesDirectory)BuildPropertyPage.xaml" />
+  </ItemGroup>
+
+</Project>

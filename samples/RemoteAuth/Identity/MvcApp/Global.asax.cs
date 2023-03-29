@@ -24,9 +24,6 @@ namespace MvcApp
                 .AddRemoteAppServer(options => options.ApiKey = ConfigurationManager.AppSettings["RemoteAppApiKey"])
                 .AddAuthenticationServer()
                 .AddSessionServer();
-
-            SamplePathProvider sampleProvider = new SamplePathProvider();
-            System.Web.Hosting.HostingEnvironment.RegisterVirtualPathProvider(sampleProvider);
         }
     }
 }
