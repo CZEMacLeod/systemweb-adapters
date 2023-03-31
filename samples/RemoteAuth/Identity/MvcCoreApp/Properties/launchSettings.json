@@ -19,7 +19,6 @@
     "MvcCoreApp": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "vrDir/Level2DirA/Level2FileA.vrf",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ReverseProxy__Clusters__fallbackCluster__Destinations__fallbackApp__Address": "https://localhost:44339"
