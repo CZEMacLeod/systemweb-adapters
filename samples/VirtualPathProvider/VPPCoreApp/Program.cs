@@ -11,10 +11,10 @@ builder.Services.AddSystemWebAdapters()
     {
         options.RegisterKey<int>("callCount");
     })
+    .AddVirtualPathProvider<SamplePathProvider>()
     .AddVirtualPathProvidersAsStaticFileProvider();
 
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSingleton<IVirtualPathProvider, SamplePathProvider>();
 
 var app = builder.Build();
 
