@@ -18,16 +18,13 @@ builder.Services.AddAuthentication()
 builder.Services.AddControllersWithViews();
 builder.Services.AddSystemWebAdapters()
     .AddJsonSessionSerializer(options => ClassLibrary.RemoteServiceUtils.RegisterSessionKeys(options.KnownKeys))
-    .AddVirtualPathProvider<ClassLibrary.SamplePathProvider>()
-    .AddVirtualPathProvidersAsStaticFileProvider(options => options.ServeUnknownFileTypes = true)
     .AddRemoteAppClient(options =>
     {
         options.RemoteAppUrl = new(builder.Configuration["ReverseProxy:Clusters:fallbackCluster:Destinations:fallbackApp:Address"]);
         options.ApiKey = builder.Configuration["RemoteAppApiKey"];
     })
     .AddAuthenticationClient(true)
-    .AddSessionClient()
-    ;
+    .AddSessionClient();
 
 var app = builder.Build();
 

@@ -20,7 +20,7 @@ internal static class HttpRuntimeFactory
         return new DefaultHttpRuntime(serviceProvider);
     }
 
-    internal abstract class BaseHttpRuntime
+    internal abstract class BaseHttpRuntime 
     {
         protected BaseHttpRuntime(IServiceProvider serviceProvider)
         {
