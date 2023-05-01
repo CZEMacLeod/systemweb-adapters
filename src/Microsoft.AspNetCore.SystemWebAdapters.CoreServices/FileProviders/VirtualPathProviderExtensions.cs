@@ -15,10 +15,7 @@ public static class VirtualPathProviderExtensions
 {
     public static ISystemWebAdapterBuilder AddVirtualPathProvidersAsStaticFileProvider(this ISystemWebAdapterBuilder adapter, Action<StaticFileOptions>? configure = null)
     {
-        if (adapter is null)
-        {
-            throw new ArgumentNullException(nameof(adapter));
-        }
+        ArgumentNullException.ThrowIfNull(adapter);
 
         adapter.Services.AddOptions<StaticFileOptions>().PostConfigure<ISystemWebHostingEnvironment>((options, env) =>
         {
@@ -32,24 +29,18 @@ public static class VirtualPathProviderExtensions
 
     public static ISystemWebAdapterBuilder AddVirtualPathProvider(this ISystemWebAdapterBuilder adapter, VirtualPathProvider virtualPathProvider)
     {
-        if (adapter is null)
-        {
-            throw new ArgumentNullException(nameof(adapter));
-        }
+        ArgumentNullException.ThrowIfNull(adapter);
 
-        adapter.Services.AddSingleton<IVirtualPathProvider>(_ => virtualPathProvider);
+        adapter.Services.AddSingleton<VirtualPathProvider>(_ => virtualPathProvider);
         return adapter;
     }
 
     public static ISystemWebAdapterBuilder AddVirtualPathProvider<T>(this ISystemWebAdapterBuilder adapter)
         where T : VirtualPathProvider
     {
-        if (adapter is null)
-        {
-            throw new ArgumentNullException(nameof(adapter));
-        }
+        ArgumentNullException.ThrowIfNull(adapter);
 
-        adapter.Services.AddSingleton<IVirtualPathProvider, T>();
+        adapter.Services.AddSingleton<VirtualPathProvider, T>();
         return adapter;
     }
 }

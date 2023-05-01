@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SystemWebAdapters.Hosting;
 
 namespace System.Web.Hosting;
 
-public abstract class VirtualPathProvider : IVirtualPathProvider
+public abstract class VirtualPathProvider
 {
     private VirtualPathProvider? _previous;
 

@@ -22,7 +22,7 @@ public static class SystemWebAdaptersExtensions
         services.AddHttpContextAccessor();
         services.AddSingleton<IHttpRuntime>(sp => HttpRuntimeFactory.Create(sp));
         services.AddSingleton<ISystemWebHostingEnvironment, DefaultHostingEnvironment>();
-        services.AddSingleton<IVirtualPathProvider, WebRootVirtualPathProvider>();
+        services.AddSingleton<VirtualPathProvider, WebRootVirtualPathProvider>();
         services.AddSingleton<Cache>();
         services.AddSingleton<IBrowserCapabilitiesFactory, BrowserCapabilitiesFactory>();
         services.AddTransient<IStartupFilter, HttpContextStartupFilter>();

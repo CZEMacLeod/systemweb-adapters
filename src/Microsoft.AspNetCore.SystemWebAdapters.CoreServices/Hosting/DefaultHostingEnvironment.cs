@@ -11,7 +11,7 @@ namespace Microsoft.AspNetCore.SystemWebAdapters.Hosting;
 
 public class DefaultHostingEnvironment : ISystemWebHostingEnvironment
 {
-    public DefaultHostingEnvironment(IEnumerable<IVirtualPathProvider> virtualPathProviders)
+    public DefaultHostingEnvironment(IEnumerable<VirtualPathProvider> virtualPathProviders)
     {
         foreach (var vpp in virtualPathProviders.OfType<VirtualPathProvider>())
         {
@@ -25,10 +25,7 @@ public class DefaultHostingEnvironment : ISystemWebHostingEnvironment
 
     public void RegisterVirtualPathProvider(VirtualPathProvider virtualPathProvider)
     {
-        if (virtualPathProvider is null)
-        {
-            throw new ArgumentNullException(nameof(virtualPathProvider));
-        }
+        ArgumentNullException.ThrowIfNull(virtualPathProvider);
 
         VirtualPathProvider? previous = this.virtualPathProvider;
         this.virtualPathProvider = virtualPathProvider;
