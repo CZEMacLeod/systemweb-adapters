@@ -9,7 +9,7 @@
     <None Include="Properties\launchSettings.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\samples\VirtualPathProvider\VPPLibrary\VPPLibrary.csproj" />
+    <ProjectReference Include="..\VPPLibrary\VPPLibrary.csproj" />
   </ItemGroup>
 
   <!-- Temporary workaround as launch profiles no longer work out of the box -->
