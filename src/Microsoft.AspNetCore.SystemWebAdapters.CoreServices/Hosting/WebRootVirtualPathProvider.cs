@@ -9,7 +9,7 @@ namespace Microsoft.AspNetCore.SystemWebAdapters.Hosting;
 
 public class WebRootVirtualPathProvider : FileProviderVirtualPathProvider
 {
-    public WebRootVirtualPathProvider(IHostEnvironment host) :
-        base((host as IWebHostEnvironment)?.WebRootFileProvider ?? new NullFileProvider())
+    public WebRootVirtualPathProvider(IWebHostEnvironment host) :
+        base(host?.WebRootFileProvider ?? new NullFileProvider())
     { }
 }

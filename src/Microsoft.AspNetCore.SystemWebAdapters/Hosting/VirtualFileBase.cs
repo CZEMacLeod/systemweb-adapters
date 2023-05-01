@@ -11,7 +11,7 @@ public abstract class VirtualFileBase
     internal string? virtualPath;
     private string? name;
 
-    public virtual string? Name => virtualPath is null ? null : name ??= VirtualPathUtility.GetFileName(virtualPath);
+    public virtual string? Name => virtualPath is null ? null : name ??= VirtualPathUtility.GetFileName(virtualPath.TrimEnd('/'));
 
     public string VirtualPath => virtualPath ?? String.Empty;
 

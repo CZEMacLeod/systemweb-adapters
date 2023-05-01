@@ -6,6 +6,10 @@
     <GeneratedBindingRedirectsAction>Overwrite</GeneratedBindingRedirectsAction>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="favicon.ico" />
+    <None Remove="index.html" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Properties\launchSettings.json" />
   </ItemGroup>
   <ItemGroup>
@@ -21,6 +25,17 @@
   <ItemGroup>
     <PropertyPageSchema Remove="$(XamlResourcesDirectory)ProjectDebugPropertyPage.xaml" />
     <PropertyPageSchema Remove="$(XamlResourcesDirectory)BuildPropertyPage.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="favicon.ico">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="index.html">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

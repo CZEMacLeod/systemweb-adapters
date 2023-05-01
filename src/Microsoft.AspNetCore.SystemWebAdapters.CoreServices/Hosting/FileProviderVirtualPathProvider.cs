@@ -29,7 +29,7 @@ public class FileProviderVirtualPathProvider : System.Web.Hosting.VirtualPathPro
         base.Initialize();
     }
 
-    private string VirtualPath(string virtualPath) =>
+    private static string VirtualPath(string virtualPath) =>
         VirtualPathUtility.IsAppRelative(virtualPath) ?
             VirtualPathUtility.ToAbsolute(virtualPath, "/") :
             virtualPath;
@@ -85,7 +85,7 @@ public class FileProviderVirtualPathProvider : System.Web.Hosting.VirtualPathPro
         var fi = FileProvider.GetFileInfo(VirtualPath(virtualPath));
         if (fi is not null && fi.Exists && !fi.IsDirectory)
         {
-            var md5 = System.Security.Cryptography.MD5.Create();
+            using var md5 = System.Security.Cryptography.MD5.Create();
             using var fis = fi.CreateReadStream();
             var hash = md5.ComputeHash(fis);
             return Convert.ToBase64String(hash);

@@ -85,10 +85,7 @@ public class VirtualPathProviderFileProvider : IFileProvider
 
         public CacheDependencyChangeToken(CacheDependency cacheDependency)
         {
-            if (cacheDependency is null)
-            {
-                throw new ArgumentNullException(nameof(cacheDependency));
-            }
+            ArgumentNullException.ThrowIfNull(cacheDependency);
 
             this.cacheDependency = cacheDependency;
             cacheDependency.SetCacheDependencyChanged((_, _) =>

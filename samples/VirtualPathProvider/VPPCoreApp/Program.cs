@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SystemWebAdapters.Hosting;
 using VPPLibrary;
 
 var builder = WebApplication.CreateBuilder();
-
+builder.Services.AddDirectoryBrowser();
 builder.Services.AddSystemWebAdapters()
     .WrapAspNetCoreSession()
     .AddSessionSerializer()
@@ -13,19 +13,19 @@ builder.Services.AddSystemWebAdapters()
         options.RegisterKey<int>("callCount");
     })
     .AddVirtualPathProvider<SamplePathProvider>()
-    .AddVirtualPathProvidersAsStaticFileProvider(options => {
+    .AddVirtualPathProvidersAsStaticFileProvider(options =>
+    {
         var mimeTypes = new FileExtensionContentTypeProvider();
         mimeTypes.Mappings[".vrf"] = "text/html";
         options.ContentTypeProvider = mimeTypes;
-
         //options.ServeUnknownFileTypes = true;
-       // We need to either ServeUnknownFileTypes or use a custom FileExtensionContentTypeProvider as .vrf files don't have a filetype set
-       // This is handled in asp.net 4.x in web.config with the staticContext/mimeMap entry
-       });
-
-
+        // We need to either ServeUnknownFileTypes or use a custom FileExtensionContentTypeProvider as .vrf files don't have a filetype set
+        // This is handled in asp.net 4.x in web.config with the staticContext/mimeMap entry
+    });
 
 builder.Services.AddDistributedMemoryCache();
+
+//builder.Services.AddOptions<DefaultFilesOptions>().PostConfigure(options => options.DefaultFileNames = new[] { "index.html" });
 
 var app = builder.Build();
 
@@ -39,7 +39,9 @@ if (!app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
+app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseDirectoryBrowser();
 
 app.UseRouting();
 
