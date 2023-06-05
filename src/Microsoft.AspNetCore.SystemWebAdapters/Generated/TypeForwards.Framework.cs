@@ -54,6 +54,7 @@
 [assembly:System.Runtime.CompilerServices.TypeForwardedTo(typeof(System.Web.ReadEntityBodyMode))]
 [assembly:System.Runtime.CompilerServices.TypeForwardedTo(typeof(System.Web.RequestNotification))]
 [assembly:System.Runtime.CompilerServices.TypeForwardedTo(typeof(System.Web.VirtualPathUtility))]
+[assembly:System.Runtime.CompilerServices.TypeForwardedTo(typeof(System.Web.Caching.AggregateCacheDependency))]
 [assembly:System.Runtime.CompilerServices.TypeForwardedTo(typeof(System.Web.Caching.Cache))]
 [assembly:System.Runtime.CompilerServices.TypeForwardedTo(typeof(System.Web.Caching.CacheDependency))]
 [assembly:System.Runtime.CompilerServices.TypeForwardedTo(typeof(System.Web.Caching.CacheItemPriority))]

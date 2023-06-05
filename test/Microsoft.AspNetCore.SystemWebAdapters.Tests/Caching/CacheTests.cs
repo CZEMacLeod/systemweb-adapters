@@ -3,6 +3,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -424,5 +425,212 @@ public class CacheTests
 
         Assert.Equal(CacheItemUpdateReason.Expired, updateReason[key1]);
         Assert.Equal(CacheItemUpdateReason.DependencyChanged, updateReason[key2]);
+    }
+
+    [Fact]
+    public async Task AggregateCacheDependency()
+    {
+        // Arrange
+        using var memCache = new MemoryCache(_fixture.Create<string>());
+
+        var cache = new Cache(memCache);
+        var httpRuntime = new Mock<IHttpRuntime>();
+        httpRuntime.Setup(s => s.Cache).Returns(cache);
+        HttpRuntime.Current = httpRuntime.Object;
+
+        var item1 = new object();
+        var item2 = new object();
+        var item3 = new object();
+        var key1 = _fixture.Create<string>();
+        var key2 = _fixture.Create<string>();
+        var key3 = _fixture.Create<string>();
+        var updateReason = new Dictionary<string, CacheItemUpdateReason>();
+        var slidingExpiration = TimeSpan.FromMilliseconds(1);
+
+        void Callback(string key, CacheItemUpdateReason reason, out object? expensiveObject, out CacheDependency? dependency, out DateTime absoluteExpiration, out TimeSpan slidingExpiration)
+        {
+            expensiveObject = null;
+            dependency = null;
+            absoluteExpiration = Cache.NoAbsoluteExpiration;
+            slidingExpiration = Cache.NoSlidingExpiration;
+
+            updateReason[key] = reason;
+        }
+
+        // Act
+        cache.Insert(key1, item1, null, Cache.NoAbsoluteExpiration, slidingExpiration, Callback);
+        cache.Insert(key2, item2, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, Callback);
+        using var cd1 = new CacheDependency(null, new[] { key1 });
+        using var cd2 = new CacheDependency(null, new[] { key2 });
+        using var agg = new AggregateCacheDependency();
+        agg.Add(cd1, cd2);
+        cache.Insert(key3, item3, agg, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, Callback);
+
+        Assert.Empty(updateReason);
+
+        // Ensure sliding expiration has hit
+        await Task.Delay(slidingExpiration);
+
+        // Force cleanup to initiate callbacks on current thread
+        memCache.Trim(100);
+
+        // Assert
+        Assert.Contains(key1, updateReason.Keys);
+        Assert.DoesNotContain(key2, updateReason.Keys);
+        Assert.Contains(key3, updateReason.Keys);
+
+        Assert.Null(cache[key1]);
+        Assert.NotNull(cache[key2]);
+        Assert.Null(cache[key3]);
+
+        Assert.Equal(CacheItemUpdateReason.Expired, updateReason[key1]);
+        Assert.Equal(CacheItemUpdateReason.DependencyChanged, updateReason[key3]);
+    }
+
+    [Fact]
+    public async Task DependentFileProperties()
+    {
+        var contents = _fixture.Create<string>();
+        var file = System.IO.Path.GetTempFileName();
+        await System.IO.File.WriteAllTextAsync(file, contents);
+
+        // Arrange
+        using var cd = new CacheDependency(file);
+        // Act
+        var fd = cd.GetFileDependencies();
+        var id = cd.GetUniqueID();
+
+        // Assert
+        Assert.NotNull(fd);
+        Assert.Contains(file, fd);
+        Assert.NotNull(id);
+        Assert.StartsWith(file, id, StringComparison.InvariantCulture);
+    }
+
+    [Fact]
+    public void AggregateProperties()
+    {
+        // Arrange
+        using var memCache = new MemoryCache(_fixture.Create<string>());
+
+        var cache = new Cache(memCache);
+        var httpRuntime = new Mock<IHttpRuntime>();
+        httpRuntime.Setup(s => s.Cache).Returns(cache);
+        HttpRuntime.Current = httpRuntime.Object;
+
+        var item1 = new object();
+        var item2 = new object();
+        var item3 = new object();
+        var key1 = _fixture.Create<string>();
+        var key2 = _fixture.Create<string>();
+        var key3 = _fixture.Create<string>();
+        var updateReason = new Dictionary<string, CacheItemUpdateReason>();
+        var slidingExpiration = TimeSpan.FromMilliseconds(1);
+
+        void Callback(string key, CacheItemUpdateReason reason, out object? expensiveObject, out CacheDependency? dependency, out DateTime absoluteExpiration, out TimeSpan slidingExpiration)
+        {
+            expensiveObject = null;
+            dependency = null;
+            absoluteExpiration = Cache.NoAbsoluteExpiration;
+            slidingExpiration = Cache.NoSlidingExpiration;
+
+            updateReason[key] = reason;
+        }
+
+        // Act
+        cache.Insert(key1, item1, null, Cache.NoAbsoluteExpiration, slidingExpiration, Callback);
+        cache.Insert(key2, item2, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, Callback);
+        using var cd1 = new CacheDependency(null, new[] { key1 });
+        using var cd2 = new CacheDependency(null, new[] { key2 });
+        using var agg = new AggregateCacheDependency();
+        agg.Add(cd1, cd2);
+
+        var fd = agg.GetFileDependencies();
+        var id1 = cd1.GetUniqueID();
+        var id2 = cd2.GetUniqueID();
+        var id = agg.GetUniqueID();
+
+        // Assert
+        Assert.Null(fd);
+        Assert.NotNull(id1);
+        Assert.NotNull(id2);
+        Assert.NotNull(id);
+        Assert.Contains(id1, id, StringComparison.InvariantCulture);
+        Assert.Contains(id2, id, StringComparison.InvariantCulture);
+    }
+
+    [Fact]
+    public async Task AggregateFileProperties()
+    {
+        // Arrange
+        var contents = _fixture.Create<string>();
+        var file1 = System.IO.Path.GetTempFileName();
+        await System.IO.File.WriteAllTextAsync(file1, contents);
+
+        var file2 = System.IO.Path.GetTempFileName();
+        await System.IO.File.WriteAllTextAsync(file2, contents);
+
+        // Arrange
+        using var cd1 = new CacheDependency(file1);
+        using var cd2 = new CacheDependency(file2);
+        using var agg = new AggregateCacheDependency();
+        agg.Add(cd1, cd2);
+
+        // Act
+        var fd = agg.GetFileDependencies();
+        var id1 = cd1.GetUniqueID();
+        var id2 = cd2.GetUniqueID();
+        var id = agg.GetUniqueID();
+
+        // Assert
+        Assert.NotNull(fd);
+        Assert.Contains(file1, fd);
+        Assert.Contains(file2, fd);
+        Assert.NotNull(id1);
+        Assert.NotNull(id2);
+        Assert.NotNull(id);
+        Assert.Contains(id1, id, StringComparison.InvariantCulture);
+        Assert.Contains(id2, id, StringComparison.InvariantCulture);
+    }
+
+    [Fact]
+    public void CacheDependencyThrowsIfOwned()
+    {
+        // Arrange
+        using var memCache = new MemoryCache(_fixture.Create<string>());
+
+        var cache = new Cache(memCache);
+        var httpRuntime = new Mock<IHttpRuntime>();
+        httpRuntime.Setup(s => s.Cache).Returns(cache);
+        HttpRuntime.Current = httpRuntime.Object;
+
+        var item1 = new object();
+        var item2 = new object();
+        var item3 = new object();
+        var key1 = _fixture.Create<string>();
+        var key2 = _fixture.Create<string>();
+        var key3 = _fixture.Create<string>();
+        var updateReason = new Dictionary<string, CacheItemUpdateReason>();
+        var slidingExpiration = TimeSpan.FromMilliseconds(1);
+
+        void Callback(string key, CacheItemUpdateReason reason, out object? expensiveObject, out CacheDependency? dependency, out DateTime absoluteExpiration, out TimeSpan slidingExpiration)
+        {
+            expensiveObject = null;
+            dependency = null;
+            absoluteExpiration = Cache.NoAbsoluteExpiration;
+            slidingExpiration = Cache.NoSlidingExpiration;
+
+            updateReason[key] = reason;
+        }
+
+        // Act
+        cache.Insert(key1, item1, null, Cache.NoAbsoluteExpiration, slidingExpiration, Callback);
+        using var cd1 = new CacheDependency(null, new[] { key1 });
+        cache.Insert(key2, item2, cd1, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, Callback);
+        using var cd2 = new CacheDependency(null, new[] { key2 });
+        using var agg = new AggregateCacheDependency();
+
+        // Assert
+        Assert.Throws<InvalidOperationException>(()=>agg.Add(cd1, cd2));
     }
 }

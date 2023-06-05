@@ -651,6 +651,14 @@ namespace System.Web
 }
 namespace System.Web.Caching
 {
+    public partial class AggregateCacheDependency : System.Web.Caching.CacheDependency
+    {
+        public AggregateCacheDependency() { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
+        public void Add(params System.Web.Caching.CacheDependency[] dependencies) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
+        protected override void DependencyDispose() { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
+        public override string[] GetFileDependencies() { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
+        public override string GetUniqueID() { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
+    }
     public sealed partial class Cache : System.Collections.IEnumerable
     {
         public static readonly System.DateTime NoAbsoluteExpiration;
@@ -680,6 +688,7 @@ namespace System.Web.Caching
         public CacheDependency(string[] filenames, string[] cachekeys, System.Web.Caching.CacheDependency dependency) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
         public CacheDependency(string[] filenames, string[] cachekeys, System.Web.Caching.CacheDependency dependency, System.DateTime start) { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
         public bool HasChanged { [System.Runtime.CompilerServices.CompilerGeneratedAttribute]get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
+        public bool TakeOwnership { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         public System.DateTime UtcLastModified { get { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");} }
         protected virtual void DependencyDispose() { throw new System.PlatformNotSupportedException("Only supported when running on ASP.NET Core or System.Web");}
         public void Dispose() { }

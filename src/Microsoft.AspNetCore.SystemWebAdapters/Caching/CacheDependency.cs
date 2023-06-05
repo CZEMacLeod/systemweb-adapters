@@ -10,15 +10,16 @@ namespace System.Web.Caching;
 public class CacheDependency : IDisposable
 {
     private readonly List<ChangeMonitor> changeMonitors = new();
-    private bool disposedValue;
+    internal bool disposedValue;
     private DateTime utcLastModified;
     private Action<object, EventArgs>? dependencyChangedAction;
     private readonly DateTime utcStart;
     private bool initCompleted;
-    private string? uniqueId;
-    private bool uniqueIdInitialized;
+    internal string? uniqueId;
+    internal bool uniqueIdInitialized;
+    private bool isOwned;
 
-    protected CacheDependency() => FinishInit();
+    protected CacheDependency() : this(null, null, null, DateTime.MaxValue) { }
 
     public CacheDependency(string filename) : this(filename, DateTime.MaxValue) { }
 
@@ -70,7 +71,7 @@ public class CacheDependency : IDisposable
     protected internal void FinishInit()
     {
         HasChanged = changeMonitors.Any(cm => cm.HasChanged && (cm.GetLastModifiedUtc() > utcStart));
-        utcLastModified = changeMonitors.Count==0 ? DateTime.MinValue : changeMonitors.Max(cm => cm.GetLastModifiedUtc());
+        utcLastModified = changeMonitors.Count == 0 ? DateTime.MinValue : changeMonitors.Max(cm => cm.GetLastModifiedUtc());
         if (HasChanged)
         {
             NotifyDependencyChanged(this, EventArgs.Empty);
@@ -103,7 +104,10 @@ public class CacheDependency : IDisposable
     public void SetCacheDependencyChanged(Action<object, EventArgs> dependencyChangedAction) =>
         this.dependencyChangedAction = dependencyChangedAction;
 
-    public virtual string[] GetFileDependencies() => changeMonitors.OfType<FileChangeMonitor>().SelectMany(cm => cm.FilePaths).ToArray();
+    public virtual string[]? GetFileDependencies() =>
+        changeMonitors.OfType<FileChangeMonitor>().Any() ?
+            changeMonitors.OfType<FileChangeMonitor>().SelectMany(cm => cm.FilePaths).ToArray() :
+            null;
 
     public bool HasChanged { get; private set; }
 
@@ -125,6 +129,7 @@ public class CacheDependency : IDisposable
         return uniqueId;
     }
 
+    public bool TakeOwnership() => isOwned ? false : isOwned = true;
 
     #region "IDisposable"
     protected virtual void DependencyDispose() { }
@@ -135,12 +140,12 @@ public class CacheDependency : IDisposable
         {
             if (disposing)
             {
-                foreach (var changeMonitor in changeMonitors)
+                var monitors = changeMonitors.ToList();
+                changeMonitors.Clear();
+                foreach (var changeMonitor in monitors)
                 {
                     changeMonitor?.Dispose();
                 }
-                changeMonitors.Clear();
-
                 DependencyDispose();
             }
             disposedValue = true;
@@ -165,6 +170,10 @@ public class CacheDependency : IDisposable
         internal CacheDependencyChangeMonitor(CacheDependency cacheDependency)
         {
             this.cacheDependency = cacheDependency;
+            if (!cacheDependency.TakeOwnership())
+            {
+                throw new InvalidOperationException("CacheDependency used more than once");
+            }
             cacheDependency.SetCacheDependencyChanged((state, _) => OnChanged(state));
             InitializationComplete();
         }
